@@ -10,6 +10,7 @@ import sys
 import requests
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
+import json
 
 endpoint = "http://localhost:10080"
 root_route = urljoin(endpoint, "/")
@@ -64,8 +65,9 @@ def obtain_personal_access_token(name, expires_at, csrf, cookies, authenticity_t
     }
     data.update(csrf)
     r = requests.post(pat_route, data=data, cookies=cookies)
-    soup = BeautifulSoup(r.text, "lxml")
-    token = soup.find('input', id='created-personal-access-token').get('value')
+    soup = BeautifulSoup(r.content, "html.parser")
+    tokensJson = json.loads(soup.getText())
+    token = tokensJson["new_token"]
     return token
 
 
